@@ -94,10 +94,11 @@ static void ce_gradient_thread(const DMatrix* matrix,
     real_t pred = score_func->CalcScore(row, *model, norm);
     // partial gradient
     real_t y = matrix->Y[i] > 0 ? 1.0 : -1.0;
+    real_t weigth = matrix->WGTH[i];
     *sum += log1p(exp(-y*pred));
     real_t pg = -y/(1.0+(1.0/exp(-y*pred)));
     // real gradient and update
-    score_func->CalcGrad(row, *model, pg, norm);
+    score_func->CalcGrad(row, *model, pg, weigth, norm);
   }
 }
 

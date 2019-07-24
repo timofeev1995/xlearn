@@ -471,7 +471,9 @@ XL_DLL int XLearnSetBool(XL *out, const char *key, const bool value) {
     xl->GetHyperParam().on_disk = value;
   } else if (strcmp(key, "quiet") == 0) {
     xl->GetHyperParam().quiet = value;
-  } else if (strcmp(key, "norm") == 0) {
+  } else if (strcmp(key, "is_weighted") == 0) {
+    xl->GetHyperParam().is_weighted = value;
+  }else if (strcmp(key, "norm") == 0) {
     xl->GetHyperParam().norm = value;
   } else if (strcmp(key, "lock_free") == 0) {
     xl->GetHyperParam().lock_free = value;
@@ -497,6 +499,8 @@ XL_DLL int XLearnGetBool(XL *out, const char *key, bool *value) {
     *value = xl->GetHyperParam().on_disk;
   } else if (strcmp(key, "quiet") == 0) {
     *value = xl->GetHyperParam().quiet;
+  } else if (strcmp(key, "is_weighted") == 0) {
+    *value = xl->GetHyperParam().is_weighted;
   } else if (strcmp(key, "norm") == 0) {
     *value = xl->GetHyperParam().norm;
   } else if (strcmp(key, "lock_free") == 0) {

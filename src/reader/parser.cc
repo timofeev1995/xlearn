@@ -93,8 +93,11 @@ void LibsvmParser::Parse(char* buf,
     if (has_label_) {  // for training task
       char *y_char = strtok(line_buf, splitor_.c_str());
       matrix.Y[i] = atof(y_char);
+      char *w_char = strtok(line_buf, splitor_.c_str());
+      matrix.WGTH[i] = atof(w_char);
     } else {  // for predict task
       matrix.Y[i] = -2;
+      matrix.WGTH[i] = 1;
     }
     // Add features
     real_t norm = 0.0;
@@ -118,6 +121,8 @@ void LibsvmParser::Parse(char* buf,
       }
       index_t idx = atoi(idx_char);
       real_t value = atof(value_char);
+
+      // TODO: Check Node structure
       matrix.AddNode(i, idx, value);
       norm += value*value;
     }

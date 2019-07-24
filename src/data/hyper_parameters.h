@@ -41,6 +41,8 @@ struct HyperParam {
   /* On-disk training for limited memory.
   True for on-disk training, and false for in-memory training. */
   bool on_disk = false;
+  /* Uses first line of input data as ample wights. */
+  bool is_weighted = false;
   /* Don't print any evaluation information 
   during the training, and just train the model.
   Setting this option to true will accerlate the training. */

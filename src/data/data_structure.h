@@ -139,6 +139,7 @@ struct DMatrix {
      row_length(0),
      row(0),
      Y(0),
+     WGTH(0),
      norm(0),
      has_label(false),
      pos(0) { }
@@ -161,6 +162,7 @@ struct DMatrix {
     this->row_length = length;
     this->row.resize(length, nullptr);
     this->Y.resize(length, 0);
+    this->WGTH.resize(length, 1);
     // Here we set norm to 1.0 by default, which means
     // that we don't use instance-wise nomarlization
     this->norm.resize(length, 1.0);
@@ -193,6 +195,7 @@ struct DMatrix {
   // Dynamically adding new row for current DMatrix.
   void AddRow() {
     this->Y.push_back(0);
+    this->WGTH.push_back(1);
     this->norm.push_back(1.0);
     this->row.push_back(nullptr);
     row_length++;
@@ -249,6 +252,8 @@ struct DMatrix {
     }
     // Copy y
     this->Y = matrix->Y;
+    // Copy weights
+    this->WGTH = matrix->WGTH;
     // Copy norm
     this->norm = matrix->norm;
     // Copy has label
@@ -323,6 +328,7 @@ struct DMatrix {
       mini_batch.AddRow();
       mini_batch.row[i] = this->row[pos];
       mini_batch.Y[i] = this->Y[pos];
+      mini_batch.WGTH[i] = this->WGTH[pos];
       mini_batch.norm[i] = this->norm[pos];
       this->pos++;
     }
@@ -334,6 +340,7 @@ struct DMatrix {
     CHECK_NE(filename.empty(), true);
     CHECK_EQ(row_length, row.size());
     CHECK_EQ(row_length, Y.size());
+    CHECK_EQ(row_length, WGTH.size());
     CHECK_EQ(row_length, norm.size());
 #ifndef _MSC_VER
     FILE* file = OpenFileOrDie(filename.c_str(), "w");
@@ -351,6 +358,8 @@ struct DMatrix {
     }
     // Write Y
     WriteVectorToFile(file, Y);
+    // Write W
+    WriteVectorToFile(file, WGTH);
     // Write norm
     WriteVectorToFile(file, norm);
     // Write has_label
@@ -383,6 +392,8 @@ struct DMatrix {
     }
     // Read Y
     ReadVectorFromFile(file, Y);
+    // W
+    ReadVectorFromFile(file, WGTH);
     // Read norm
     ReadVectorFromFile(file, norm);
     // Read has label
@@ -428,6 +439,8 @@ struct DMatrix {
   /* (0 or -1) for negative and (+1) for positive
   examples, and others value for regression */
   std::vector<real_t> Y;
+  // Weights
+  std::vector<real_t> WGTH;
   /* Used for instance-wise normalization */
   std::vector<real_t> norm;
   /* If current dataset has label y */
