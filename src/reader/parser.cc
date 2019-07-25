@@ -89,11 +89,11 @@ void LibsvmParser::Parse(char* buf,
     int i = matrix.row_length - 1;
     if (reset == false) {
     }
-    // Add Y
+    // Add Y and weights
     if (has_label_) {  // for training task
       char *y_char = strtok(line_buf, splitor_.c_str());
       matrix.Y[i] = atof(y_char);
-      char *w_char = strtok(line_buf, splitor_.c_str());
+      char *w_char = strtok(nullptr, splitor_.c_str());
       matrix.WGTH[i] = atof(w_char);
     } else {  // for predict task
       matrix.Y[i] = -2;
