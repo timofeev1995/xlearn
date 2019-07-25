@@ -49,6 +49,7 @@ public:
  void CalcGrad(const SparseRow* row,
                Model& model,
                real_t pg,
+               real_t weigth,
                real_t norm = 1.0);
 
  protected:
@@ -56,18 +57,21 @@ public:
   void calc_grad_sgd(const SparseRow* row,
                      Model& model,
                      real_t pg,
+                     real_t weigth,
                      real_t norm = 1.0);
 
   // Calculate gradient and update model using adagrad
   void calc_grad_adagrad(const SparseRow* row,
   	                     Model& model,
   	                     real_t pg,
+                         real_t weigth,
   	                     real_t norm = 1.0);
 
   // Calculate gradient and update model using ftrl
   void calc_grad_ftrl(const SparseRow* row,
   	                  Model& model,
   	                  real_t pg,
+                      real_t weigth,
   	                  real_t norm = 1.0);
 
  private:

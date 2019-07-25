@@ -96,18 +96,19 @@ real_t FFMScore::CalcScore(const SparseRow* row,
 void FFMScore::CalcGrad(const SparseRow* row,
                         Model& model,
                         real_t pg,
+                        real_t weigth,
                         real_t norm) {
   // Using sgd
   if (opt_type_.compare("sgd") == 0) {
-    this->calc_grad_sgd(row, model, pg, norm);
+    this->calc_grad_sgd(row, model, pg, weigth, norm);
   }
   // Using adagrad
   else if (opt_type_.compare("adagrad") == 0) {
-    this->calc_grad_adagrad(row, model, pg, norm);
+    this->calc_grad_adagrad(row, model, pg, weigth, norm);
   }
   // Using ftrl 
   else if (opt_type_.compare("ftrl") == 0) {
-    this->calc_grad_ftrl(row, model, pg, norm);
+    this->calc_grad_ftrl(row, model, pg, weigth, norm);
   } 
   else {
     LOG(FATAL) << "Unknow optimization method: " << opt_type_;
@@ -119,6 +120,7 @@ void FFMScore::CalcGrad(const SparseRow* row,
 void FFMScore::calc_grad_sgd(const SparseRow* row,
                              Model& model,
                              real_t pg,
+                             real_t weigth,
                              real_t norm) {
   /*********************************************************
    *  linear term and bias term                            *
@@ -134,13 +136,13 @@ void FFMScore::calc_grad_sgd(const SparseRow* row,
     if (feat_id >= num_feat) continue;
     real_t &wl = w[feat_id];
     real_t g = regu_lambda_*wl+pg*iter->feat_val*sqrt_norm;
-    wl -= (learning_rate_ * g);
+    wl -= (learning_rate_ * g * weigth);
   }
   // bias
   w = model.GetParameter_b();
   real_t &wb = w[0];
   real_t g = pg;
-  wb -= (learning_rate_ * g);
+  wb -= (learning_rate_ * g * weigth);
   /*********************************************************
    *  latent factor                                        *
    *********************************************************/
@@ -149,7 +151,7 @@ void FFMScore::calc_grad_sgd(const SparseRow* row,
   index_t align = kAlign * model.GetAuxiliarySize();
   w = model.GetParameter_v();
   __m128 XMMpg = _mm_set1_ps(pg);
-  __m128 XMMlr = _mm_set1_ps(learning_rate_);
+  __m128 XMMlr = _mm_set1_ps(learning_rate_ * weigth);
   __m128 XMMlamb = _mm_set1_ps(regu_lambda_);
   for (SparseRow::const_iterator iter_i = row->begin();
        iter_i != row->end(); ++iter_i) {
@@ -195,6 +197,7 @@ void FFMScore::calc_grad_sgd(const SparseRow* row,
 void FFMScore::calc_grad_adagrad(const SparseRow* row,
                                  Model& model,
                                  real_t pg,
+                                 real_t weigth,
                                  real_t norm) {
   /*********************************************************
    *  linear term and bias term                            *
@@ -212,7 +215,7 @@ void FFMScore::calc_grad_adagrad(const SparseRow* row,
     real_t &wlg = w[feat_id*2+1];
     real_t g = regu_lambda_*wl+pg*iter->feat_val*sqrt_norm;
     wlg += g*g;
-    wl -= learning_rate_ * g * InvSqrt(wlg);
+    wl -= learning_rate_ * g * weigth * InvSqrt(wlg);
   }
   // bias
   w = model.GetParameter_b();
@@ -220,7 +223,7 @@ void FFMScore::calc_grad_adagrad(const SparseRow* row,
   real_t &wbg = w[1];
   real_t g = pg;
   wbg += g*g;
-  wb -= learning_rate_ * g * InvSqrt(wbg);
+  wb -= learning_rate_ * g * weigth * InvSqrt(wbg);
   /*********************************************************
    *  latent factor                                        *
    *********************************************************/
@@ -229,7 +232,7 @@ void FFMScore::calc_grad_adagrad(const SparseRow* row,
   index_t align = kAlign * 2;
   w = model.GetParameter_v();
   __m128 XMMpg = _mm_set1_ps(pg);
-  __m128 XMMlr = _mm_set1_ps(learning_rate_);
+  __m128 XMMlr = _mm_set1_ps(learning_rate_ * weigth);
   __m128 XMMlamb = _mm_set1_ps(regu_lambda_);
   for (SparseRow::const_iterator iter_i = row->begin();
        iter_i != row->end(); ++iter_i) {
@@ -283,6 +286,7 @@ void FFMScore::calc_grad_adagrad(const SparseRow* row,
 void FFMScore::calc_grad_ftrl(const SparseRow* row,
                               Model& model,
                               real_t pg,
+                              real_t weigth,
                               real_t norm) {
   /*********************************************************
    *  linear term and bias term                            *
