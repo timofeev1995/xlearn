@@ -93,13 +93,17 @@ std::string Reader::check_file_format() {
       count++;
     }
   }
-  if (count == 1) {
-    return "libsvm";
-  } else if (count == 2) {
-    return "libffm";
-  } else if (count == 0){
-    return "csv";
-  }
+  return "libsvm";
+  // if (count == 1) {
+  //   return "libsvm";
+  //   Color::print_info("libffm PARSER");
+  // } else if (count == 2) {
+  //   return "libffm";
+  //   Color::print_info("LIBFFM");
+  // } else if (count == 0){
+  //   return "csv";
+  //   Color::print_info("CSV PARSER");
+  // }
   Color::print_error("Unknow file format");
   exit(0);
 }
@@ -367,6 +371,7 @@ index_t FromDMReader::Samples(DMatrix* &matrix) {
     // Copy data between different DMatrix.
     data_samples_.row[i] = this->data_ptr_->row[order_[pos_]];
     data_samples_.Y[i] = this->data_ptr_->Y[order_[pos_]];
+    data_samples_.WGTH[i] = this->data_ptr_->WGTH[order_[pos_]];
     data_samples_.norm[i] = this->data_ptr_->norm[order_[pos_]];
     pos_++;
   }

@@ -122,7 +122,6 @@ void LibsvmParser::Parse(char* buf,
       index_t idx = atoi(idx_char);
       real_t value = atof(value_char);
 
-      // TODO: Check Node structure
       matrix.AddNode(i, idx, value);
       norm += value*value;
     }

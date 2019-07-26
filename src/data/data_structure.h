@@ -176,8 +176,9 @@ struct DMatrix {
     this->has_label = true;
     this->hash_value_1 = 0;
     this->hash_value_2 = 0;
-    // Delete Y
+    // Delete Y and W
     std::vector<real_t>().swap(this->Y);
+    std::vector<real_t>().swap(this->WGTH);
     // Delete Node
     for (int i = 0; i < this->row_length; ++i) {
       if ((this->row)[i] != nullptr) {
